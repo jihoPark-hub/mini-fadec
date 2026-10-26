@@ -1,0 +1,6 @@
+Case,Accel_t95_s,Accel_overshoot_pct,Decel_t_s,Decel_undershoot_pct,SmallStep_overshoot_pct_of_step
+Nominal,4.52,0.11,9.26,0,6.66
+Spool 30% heavier (k -30%),4.52,0.11,9.26,0,6.66
+Spool 30% lighter (k +30%),4.52,0.11,9.26,0,6.66
+Fuel valve lag 0.2 s,4.95,0.22,10.1,0,13.6
+Sensor noise (power 1e-4),4.52,0.11,9.3,0.01,7.46

@@ -1,0 +1,4 @@
+c,SmallStep_overshoot_pct_of_step,Accel_t95_s,Accel_overshoot_pct,Decel_t_s,Decel_undershoot_pct
+1,0.54,5.06,0,10.48,0
+1.5,6.66,4.52,0.11,9.26,0
+2,12.37,4.4,0.47,8.88,0.05

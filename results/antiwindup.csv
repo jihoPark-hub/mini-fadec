@@ -1,0 +1,4 @@
+Method,Accel_t95_s,Overshoot_pct,Peak_Wf_PI
+"No anti-windup",8.49,3.59,8.87
+"Output limit + clamping only",8.49,0.67,1.1
+"Tracking, K_t = 10 (final design)",8.52,0.06,1.1

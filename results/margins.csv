@@ -1,0 +1,4 @@
+Operating_point,N0_pct,GM_dB,Phase_crossover_rad_s,PM_deg,Gain_crossover_rad_s
+Idle,60,27.33,21.5,70.66,2.06
+Cruise,85,27.13,21.24,66.98,2.18
+Take-off,100,26.97,21.06,65.48,2.27
