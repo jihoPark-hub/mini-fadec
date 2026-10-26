@@ -1,0 +1,13 @@
+k = 50;                       % Spool gain [%/s per unit fuel]
+n = 2.7;                      % Steady-state fuel map exponent
+N0 = 60;                      % Initial shaft speed [%]
+Wf0 = (N0/100)^n;             % Idle fuel flow [-]
+a = (n/100)*(N0/100)^(n-1);   % Slope of fuel curve
+K = 1/a;                      % Steady state gain
+tau = 1/(k*a);                % Time constant
+dWf = 0.748;                  % Step size Wf
+tau_cl = 0.5;                 % Desired closed-loop time constant [s]
+Kp = tau/(K*tau_cl);          % Proportional gain
+Ki = 2* Kp/tau;                  % Integral gain (zero cancels plant pole)
+dNd = 40;                     % Step size N
+m = 0.1;                      % Margin between steady and surge
