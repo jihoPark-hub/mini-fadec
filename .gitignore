@@ -1,0 +1,9 @@
+# MATLAB / Simulink temporary files
+*.asv
+*.autosave
+*.slxc
+*.mex*
+slprj/
+codegen/
+sccprj/
+*.slx.r20*
