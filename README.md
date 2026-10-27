@@ -4,7 +4,7 @@ A Simulink project designing and testing a simplified **Full Authority Digital E
 
 > **Key results (final design, nominal engine)**
 > - Idle → 95% take-off thrust in **≈ 4.5 s** (target ≤ 5 s), overshoot **≈ 0.1%**
-> - Take-off → idle within 1% in **≈ 9.7 s**, no undershoot
+> - Take-off → idle within 1% in **≈ 9.3 s**, no undershoot
 > - Same closed-loop response at idle, cruise and take-off (gain scheduling)
 > - Gain margin **≈ 27 dB**, phase margin **≥ 65°** at all operating points, including valve, sensor and sampling lags
 
@@ -105,9 +105,11 @@ Exact cancellation gave identical responses at all operating points, but **hid**
 
 | c | Small-step overshoot | Idle → 95% thrust | Overshoot | Take-off → idle (within 1%) |
 |---|---|---|---|---|
-| 1 | 0% | ~5.0 s | none | ~11.8 s (slow tail) |
-| **1.5 (chosen)** | **6–7.5%** | **~4.5 s** | **~0.1%** | **~9.7 s** |
-| 2 | ~11% | ~4.3 s | ~0.4% | ~9.0 s |
+| 1 | 0.5% | 5.1 s | none | 10.5 s (slow tail) |
+| **1.5 (chosen)** | **6.7%** | **4.5 s** | **0.1%** | **9.3 s** |
+| 2 | 12.4% | 4.4 s | 0.5% | 8.9 s |
+
+(Small-step overshoot is for a 2% step at idle, as a percentage of the step. Full data: `results/c_study.csv`; figure: `figures/extra/c_tradeoff.png`.)
 
 ---
 
@@ -134,12 +136,13 @@ The classic FADEC selection structure: no switching logic is needed, and the ord
 ![Acceleration with protection](figures/05_accel_protection.png)
 
 ### Anti-windup: how it evolved
-| Method | Result (idle → take-off) |
-|---|---|
-| None | integrator winds up behind the saturated valve → **3.3% overshoot** |
-| Integrator limit only | windup capped but still present → 1.3% overshoot |
-| Output saturation + clamping | no overshoot from the valve limit, but **windup behind the Min block** (integrator pumped up to hold its own limit) → 0.4% overshoot at small margins |
-| **Tracking** (track = final command) | PI output follows the fuel actually used → **no windup** |
+Compared in the final model with a tight acceleration margin (0.10), so the PI spends ~8 s behind the acceleration limit:
+
+| Method | Peak PI output | Overshoot | What happens |
+|---|---|---|---|
+| None | 8.9 | **3.6%** | integrator winds up far beyond anything the valve can deliver |
+| Output saturation + clamping | 1.1 | 0.7% | stops windup at the valve limit, but **not behind the Min block**: the PI still holds its output above W_f,max |
+| **Tracking** (track = final command) | 1.1 | **0.06%** | PI output follows the fuel actually used → no windup |
 
 The steady gap between PI output and the actual command under tracking is ≈ $K_i e / K_t$, so **K_t is scaled with K_i**. The final design uses **K_t = 10**, slightly stronger than the ratio rule suggests for c = 1.5 (≈ 7.5), keeping the PI output close to the actual command for smooth, overshoot-free handovers while still meeting the 5 s target.
 
@@ -160,8 +163,8 @@ The steady gap between PI output and the actual command under tracking is ≈ $K
 |---|---|
 | Idle → take-off (60 → 100%): time to 95% thrust | **≈ 4.5 s** ✅ |
 | Overshoot | **≈ 0.1%** ✅ |
-| Take-off → idle (100 → 60%): time to within 1% | **≈ 9.7 s**, no undershoot |
-| Small steps (2%) at idle / cruise / take-off | 6.0% / 7.0% / 7.5% overshoot (0.12–0.15% absolute speed) |
+| Take-off → idle (100 → 60%): time to within 1% | **≈ 9.3 s**, no undershoot |
+| Small steps (2%) at idle / cruise / take-off | 6.7% / 8.1% / 9.0% overshoot (0.13–0.18% absolute speed) |
 
 ![Deceleration with protection](figures/06_decel_protection.png)
 
@@ -170,9 +173,9 @@ The ramp rate is ≈ k × margin, so the 95%-thrust time is predicted well by $3
 
 | Margin | Time to 95% thrust | Overshoot |
 |---|---|---|
-| 0.10 | ~8.7 s | none |
-| 0.15 | ~6.2 s | none |
-| **0.20** | **~4.5–5 s** | none |
+| 0.10 | 8.5 s | 0.06% |
+| 0.15 | 5.8 s | 0.09% |
+| **0.20** | **4.5 s** | 0.11% |
 
 Before gain scheduling, increasing the margin barely helped: the slow PI tail near take-off dominated. **Each fix moved the bottleneck.**
 
@@ -180,16 +183,17 @@ Before gain scheduling, increasing the margin barely helped: the slow PI tail ne
 
 ## 7. Robustness
 
-Each case changes one thing from nominal; the controller is not re-tuned.
+Each case changes one thing from nominal; the controller is not re-tuned. Nominal already includes the discrete controller (T_s = 0.01 s) and a 0.02 s sensor lag.
 
-| Case | Idle → 95% thrust | Overshoot | Take-off → idle | Small-step overshoot |
+| Case | Idle → 95% thrust | Overshoot | Take-off → idle | Small-step overshoot (idle) |
 |---|---|---|---|---|
-| Nominal | ~4.5 s ✅ | ~0.1% | ~9.7 s | 6.0% |
-| Spool 30% heavier (k −30%) | ~6.3 s ❌ | none | ~13.3 s | ~5.5% (slower settling) |
-| Spool 30% lighter (k +30%) | ~3.6 s ✅ | ~0.2% | ~7.4 s | ~6% |
-| Fuel valve lag 0.2 s | ~5.0 s ⚠️ | ~0.2% | ~10.5 s | ~11.5% |
-| Discrete controller, 0.01 s | ~4.5 s ✅ | ~0.1% | ~9.7 s | ~6% |
-| Sensor lag 0.02 s + noise (σ ≈ 0.1%) | ~4.5 s ✅ | ~0.1% | — | — |
+| Nominal | 4.5 s ✅ | 0.1% | 9.3 s | 6.7% |
+| Spool 30% heavier (k −30%) | 6.1 s ❌ | 0.5% | 12.3 s | 11.7% |
+| Spool 30% lighter (k +30%) | 3.8 s ✅ | none | 7.8 s | 3.2% |
+| Fuel valve lag 0.2 s | 5.0 s ⚠️ | 0.2% | 10.1 s | 13.6% |
+| Sensor noise (σ ≈ 0.1%) | 4.5 s ✅ | 0.1% | 9.3 s | 7.5% |
+
+Full data: `results/robustness.csv`.
 
 **Stability margins** (open loop: PI × valve × engine × sensor × sampling delay):
 
@@ -204,8 +208,9 @@ Gain crossover is at ≈ 2 rad/s (= 1/τ_cl, as designed); phase crossover is at
 ![Bode plot at take-off](figures/07_bode_takeoff.png)
 
 **Findings**
-- **Response shape is robust, speed is not.** Small-step overshoot hardly changes with ±30% engine variation, but acceleration time scales with k because the schedules limit **fuel**, not **acceleration rate**. A 30% heavier engine misses the 5 s target.
-- **A slower valve** (0.2 s, beyond the critical τ_cl/4 ≈ 0.125 s) roughly doubles small-step overshoot but remains stable; big steps barely change because they are schedule-limited.
+- **Big-step speed scales with the engine.** Acceleration time scales with k because the schedules limit **fuel**, not **acceleration rate**, so a 30% heavier engine misses the 5 s target.
+- **Small-step overshoot depends on the engine too.** K_p is fixed, so a heavier engine lowers the loop gain and slows the closed loop while the PI zero stays where it was designed; the zero then dominates and overshoot nearly doubles (11.7%). A lighter engine does the opposite (3.2%). All cases stay stable.
+- **A slower valve** (0.2 s, beyond the critical τ_cl/4 ≈ 0.125 s) roughly doubles small-step overshoot (13.6%) but remains stable; big steps barely change because they are schedule-limited.
 - **Sensor noise ends up in the fuel command, not the shaft speed.** The engine's inertia filters it; the cost is valve activity (≈ K_p × noise), which is also why the controller is PI, not PID.
 - **A failed speed sensor** (reading ≈ 0 in a mis-wired test) drove fuel to its maximum and N to ≈ 103.6% with nothing to stop it, which shows why real FADECs validate sensors and have independent overspeed protection.
 
@@ -215,7 +220,8 @@ Gain crossover is at ≈ 2 rad/s (= 1/τ_cl, as designed); phase crossover is at
 
 - **The textbook design was the easy part.** The PI loop worked first time on small steps; nearly all the effort went into limits, handovers and interactions between protection logic and the controller.
 - **Pole cancellation hides a slow pole; it doesn't remove it.** It reappears whenever the controller starts from a mismatched state, which here happened at every protection handover during deceleration.
-- **Poles alone don't predict overshoot; zeros matter.** Predictions based only on damping ratio were wrong twice; including the PI zero explained both results.
+- **Poles alone don't predict overshoot; zeros matter.** A damping-ratio-only prediction put the c = 2 small-step overshoot at ~2%; it was 12%. Including the PI zero explained it.
+- **A test that changes nothing is a bug, not a result.** The first scripted ±30% engine runs matched nominal exactly: the engine block was reading the controller's nominal k instead of the perturbed k_true. Plant and controller parameters must be kept separate.
 - **Clamping anti-windup isn't enough once there are min/max limits outside the PI.** Tracking the final command is needed.
 - **Predict before simulating.** Every test was preceded by a hand prediction; the mismatches were where the learning happened.
 
@@ -234,12 +240,11 @@ Gain crossover is at ≈ 2 rad/s (= 1/τ_cl, as designed); phase crossover is at
 ## 10. Repository structure and how to run
 
 ```
-mini_fadec/
+mini-fadec/
 ├── parameters.m                  % all parameters (loaded automatically by the model)
 ├── mini_fadec.slx                % final model: FADEC controller + fuel valve + spool
-├── spool_openloop.slx            % nonlinear spool model, open loop
 ├── spool_linmod.slx              % Inport/Outport version for linmod
-├── compare_lin.slx               % linear vs nonlinear comparison
+├── compare_lin.slx               % open-loop spool: nonlinear vs linearised
 ├── run_lin.m                     % numerical linearisation check
 ├── make_figures.m                % regenerates every figure and results table
 ├── figures/                      % README figures
