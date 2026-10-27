@@ -22,7 +22,7 @@ function make_figures(ids)
 %   Exact numbers for the README tables go to results/*.csv (also printed).
 %
 %   Assumptions (they match the final model):
-%     - PI_controller_actuator.slx and parameters.m are in this folder
+%     - mini_fadec.slx and parameters.m are in this folder
 %     - the N_demand step happens at t = 2 s (change S.tStep below if not)
 %     - logged signals: N_demand, N, N_meas, Wf_PI, Wf_max, Wf_min, Wf_cmd, Wf
 %     - blocks use the parameters.m names: N0, dNd, Wf0, c, Kp, Kt, m_acc,
@@ -218,7 +218,7 @@ for i = 1:size(cases, 1)
     rows(end+1, :) = {cases{i,1}, r2(tA), r2(os), r2(max(Wp))}; %#ok<AGROW>
 end
 yline(ax1, 98.3, ':', '95% thrust', 'Color', C.muted, 'HandleVisibility', 'off', ...
-      'LabelHorizontalAlignment', 'left');
+      'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'top');
 ylabel(ax1, 'Shaft speed N [%]');
 legend(ax1, 'Location', 'southeast');
 
@@ -307,8 +307,8 @@ xlabel(ax2, 'Frequency [rad/s]');
 
 linkaxes([ax1 ax2], 'x');
 xlim(ax1, [0.1 100]);
-title(tl, sprintf('Open loop at take-off (PI \\times valve \\times engine \\times sensor): GM %.1f dB, PM %.1f^{\\circ}', ...
-                  GmdB, Pm));
+title(tl, sprintf('Open loop at take-off: GM %.1f dB, PM %.1f^{\\circ}', GmdB, Pm));
+subtitle(tl, 'L(s) = PI \times valve \times engine \times sensor \times sampling delay');
 saveFig(S, f, fullfile(S.figDir, '07_bode_takeoff.png'));
 end
 
@@ -413,7 +413,7 @@ for i = 1:numel(margins)
     rows(end+1, :) = {margins(i), r2(tA), r2(os)}; %#ok<AGROW>
 end
 yline(ax, 98.3, ':', '95% thrust', 'Color', C.muted, 'HandleVisibility', 'off', ...
-      'LabelHorizontalAlignment', 'left');
+      'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'top');
 xline(ax, 5, '--', '5 s target', 'Color', C.muted, 'HandleVisibility', 'off', ...
       'LabelVerticalAlignment', 'bottom');
 xlim(ax, [-1 S.tStop - S.tStep]);  ylim(ax, [55 103]);
@@ -458,7 +458,7 @@ for i = 1:size(cases, 1)
     rows(end+1, :) = {cases{i,1}, r2(ta), r2(os), r2(td), r2(us), r2(osS)}; %#ok<AGROW>
 end
 yline(ax1, 98.3, ':', '95% thrust', 'Color', C.muted, 'HandleVisibility', 'off', ...
-      'LabelHorizontalAlignment', 'left');
+      'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'top');
 xline(ax1, 5, '--', '5 s target', 'Color', C.muted, 'HandleVisibility', 'off', ...
       'LabelVerticalAlignment', 'bottom');
 ylabel(ax1, 'Shaft speed N [%]');
@@ -662,7 +662,7 @@ plot(ax2, t6 - t0, Nd, '--', 'Color', C.muted, 'LineWidth', 1.2, 'DisplayName', 
 plot(ax2, t7 - t0, N,  '-',  'Color', C.s{1},  'LineWidth', 2.0, 'DisplayName', 'N');
 if isAccel
     yline(ax2, 98.3, ':', '95% thrust', 'Color', C.muted, 'HandleVisibility', 'off', ...
-          'LabelHorizontalAlignment', 'left');
+          'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'top');
 else
     yline(ax2, 60 + S.band, ':', sprintf('within %g%%', S.band), 'Color', C.muted, ...
           'HandleVisibility', 'off', 'LabelHorizontalAlignment', 'left');
