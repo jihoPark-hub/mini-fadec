@@ -218,7 +218,7 @@ for i = 1:size(cases, 1)
     rows(end+1, :) = {cases{i,1}, r2(tA), r2(os), r2(max(Wp))}; %#ok<AGROW>
 end
 yline(ax1, 98.3, ':', '95% thrust', 'Color', C.muted, 'HandleVisibility', 'off', ...
-      'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'top');
+      'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'bottom');
 ylabel(ax1, 'Shaft speed N [%]');
 legend(ax1, 'Location', 'southeast');
 
@@ -413,7 +413,7 @@ for i = 1:numel(margins)
     rows(end+1, :) = {margins(i), r2(tA), r2(os)}; %#ok<AGROW>
 end
 yline(ax, 98.3, ':', '95% thrust', 'Color', C.muted, 'HandleVisibility', 'off', ...
-      'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'top');
+      'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'bottom');
 xline(ax, 5, '--', '5 s target', 'Color', C.muted, 'HandleVisibility', 'off', ...
       'LabelVerticalAlignment', 'bottom');
 xlim(ax, [-1 S.tStop - S.tStep]);  ylim(ax, [55 103]);
@@ -458,7 +458,7 @@ for i = 1:size(cases, 1)
     rows(end+1, :) = {cases{i,1}, r2(ta), r2(os), r2(td), r2(us), r2(osS)}; %#ok<AGROW>
 end
 yline(ax1, 98.3, ':', '95% thrust', 'Color', C.muted, 'HandleVisibility', 'off', ...
-      'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'top');
+      'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'bottom');
 xline(ax1, 5, '--', '5 s target', 'Color', C.muted, 'HandleVisibility', 'off', ...
       'LabelVerticalAlignment', 'bottom');
 ylabel(ax1, 'Shaft speed N [%]');
@@ -662,7 +662,7 @@ plot(ax2, t6 - t0, Nd, '--', 'Color', C.muted, 'LineWidth', 1.2, 'DisplayName', 
 plot(ax2, t7 - t0, N,  '-',  'Color', C.s{1},  'LineWidth', 2.0, 'DisplayName', 'N');
 if isAccel
     yline(ax2, 98.3, ':', '95% thrust', 'Color', C.muted, 'HandleVisibility', 'off', ...
-          'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'top');
+          'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'bottom');
 else
     yline(ax2, 60 + S.band, ':', sprintf('within %g%%', S.band), 'Color', C.muted, ...
           'HandleVisibility', 'off', 'LabelHorizontalAlignment', 'left');
