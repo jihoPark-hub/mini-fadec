@@ -1,6 +1,6 @@
-# Mini FADEC: Gain-Scheduled Fuel Controller for a Single-Spool Gas Turbine
+# Mini FADEC: Gain-Scheduled Fuel Controller for a Single-Shaft Gas Turbine
 
-A Simulink project designing and testing a simplified **Full Authority Digital Engine Control (FADEC)** speed controller: a nonlinear spool model, a gain-scheduled PI speed loop, a realistic fuel valve, FADEC-style acceleration/deceleration protection with min/max selection, tracking anti-windup, and a robustness study.
+A Simulink project designing and testing a simplified **Full Authority Digital Engine Control (FADEC)** speed controller: a nonlinear engine-shaft model, a gain-scheduled PI speed loop, a realistic fuel valve, FADEC-style acceleration/deceleration protection with min/max selection, tracking anti-windup, and a robustness study.
 
 > **Key results (final design, nominal engine)**
 > - Idle → 95% take-off thrust in **≈ 4.5 s** (target ≤ 5 s), overshoot **≈ 0.1%**
@@ -43,11 +43,11 @@ The pilot's thrust lever sets a demanded shaft speed $N_{demand}$. The controlle
 
 ## 2. Engine model
 
-A single-spool engine (compressor and turbine on one shaft) modelled by a lumped torque/power balance:
+A single-shaft (single-spool) engine, with compressor and turbine on one shaft, modelled by a lumped torque/power balance:
 
 $$\frac{dN}{dt} = k\left[W_f - W_{f,ss}(N)\right], \qquad W_{f,ss}(N) = \left(\frac{N}{100}\right)^{n}$$
 
-Fuel above the steady-state requirement $W_{f,ss}(N)$ produces excess turbine power and accelerates the spool.
+Fuel above the steady-state requirement $W_{f,ss}(N)$ produces excess turbine power and accelerates the shaft.
 
 | Parameter | Value | Basis |
 |---|---|---|
@@ -188,8 +188,8 @@ Each case changes one thing from nominal; the controller is not re-tuned. Nomina
 | Case | Idle → 95% thrust | Overshoot | Take-off → idle | Small-step overshoot (idle) |
 |---|---|---|---|---|
 | Nominal | 4.5 s ✅ | 0.1% | 9.3 s | 6.7% |
-| Spool 30% heavier (k −30%) | 6.1 s ❌ | 0.5% | 12.3 s | 11.7% |
-| Spool 30% lighter (k +30%) | 3.8 s ✅ | none | 7.8 s | 3.2% |
+| Shaft 30% heavier (k −30%) | 6.1 s ❌ | 0.5% | 12.3 s | 11.7% |
+| Shaft 30% lighter (k +30%) | 3.8 s ✅ | none | 7.8 s | 3.2% |
 | Fuel valve lag 0.2 s | 5.0 s ⚠️ | 0.2% | 10.1 s | 13.6% |
 | Sensor noise (σ ≈ 0.1%) | 4.5 s ✅ | 0.1% | 9.3 s | 7.5% |
 
@@ -242,9 +242,9 @@ Gain crossover is at ≈ 2 rad/s (= 1/τ_cl, as designed); phase crossover is at
 ```
 mini-fadec/
 ├── parameters.m                  % all parameters (loaded automatically by the model)
-├── mini_fadec.slx                % final model: FADEC controller + fuel valve + spool
+├── mini_fadec.slx                % final model: FADEC controller + fuel valve + engine
 ├── spool_linmod.slx              % Inport/Outport version for linmod
-├── compare_lin.slx               % open-loop spool: nonlinear vs linearised
+├── compare_lin.slx               % open-loop engine: nonlinear vs linearised
 ├── run_lin.m                     % numerical linearisation check
 ├── make_figures.m                % regenerates every figure and results table
 ├── figures/                      % README figures
