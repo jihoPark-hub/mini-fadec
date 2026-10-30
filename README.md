@@ -23,7 +23,7 @@ A Simulink project designing and testing a simplified **Full Authority Digital E
 8. [Lessons learned](#8-lessons-learned)
 9. [Limitations and further work](#9-limitations-and-further-work)
 10. [Repository structure and how to run](#10-repository-structure-and-how-to-run)
-11. [References](#11-references)
+11. [Sources](#11-sources)
 
 ---
 
@@ -260,11 +260,9 @@ Requirements: MATLAB/Simulink with the Control System Toolbox.
 
 ---
 
-## 11. References
+## 11. Sources
 
-- Rolls-Royce, *The Jet Engine*.
-- H. I. H. Saravanamuttoo et al., *Gas Turbine Theory*.
-- P. P. Walsh and P. Fletcher, *Gas Turbine Performance*.
-- L. C. Jaw and J. D. Mattingly, *Aircraft Engine Controls: Design, System Analysis, and Health Monitoring*, AIAA.
-- K. J. Åström and T. Hägglund, *Advanced PID Control* (anti-windup, setpoint weighting).
-- NASA T-MATS: Toolbox for the Modeling and Analysis of Thermodynamic Systems.
+The model was built from first principles and course material; it uses no published engine data.
+
+- Cambridge Engineering course material on linear systems and control.
+- MathWorks documentation: PID Controller block (anti-windup, tracking mode), `linmod`, `margin`.
